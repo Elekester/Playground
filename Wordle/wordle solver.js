@@ -34,7 +34,6 @@ let wordle = {
 		for (let i = 0; i < 5; i++) {
 			if (values_array[i] == 'c' && !(guess_array[i] in wordle.correct)) {
 				wordle.correct[guess_array[i]] = i;
-				if (guess_array[i] in wordle.wrong_spot) delete wordle.wrong_spot[guess_array[i]];
 			}
 			if (values_array[i] == 'i' && !(wordle.incorrect.includes(guess_array[i]))) wordle.incorrect.push(guess_array[i]);
 			if (values_array[i] == 'w') {
