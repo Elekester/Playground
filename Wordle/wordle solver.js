@@ -1,7 +1,9 @@
+let word_list = [];
+
 fetch('https://raw.githubusercontent.com/Elekester/Playground/main/Wordle/word%20list.json')
 	.then(response => response.text())
 	.then(data => {
-		let word_list = JSON.parse(data);
+		word_list = JSON.parse(data);
 	});
 
 function remove_element(array, element) {
