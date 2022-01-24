@@ -1,4 +1,8 @@
-let word_list = [];
+fetch('word list.json')
+	.then(response => response.text())
+	.then(data => {
+		word_list = JSON.parse(data);
+	});
 
 let wordle = {
 	correct: {},
