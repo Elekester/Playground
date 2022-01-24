@@ -1,11 +1,5 @@
 let word_list = [];
 
-fetch('https://raw.githubusercontent.com/Elekester/Playground/main/Wordle/word%20list.json')
-	.then(response => response.text())
-	.then(data => {
-		word_list = JSON.parse(data);
-	});
-
 function remove_element(array, element) {
 	const index = array.indexOf(element);
 	if (index > -1) array.splice(index, 1);
@@ -111,3 +105,10 @@ let wordle = {
 		wordle.word_list.sort(compare_words);
 	}
 }
+
+fetch('https://raw.githubusercontent.com/Elekester/Playground/main/Wordle/word%20list.json')
+	.then(response => response.text())
+	.then(data => {
+		word_list = JSON.parse(data);
+		wordle.reset();
+	});
