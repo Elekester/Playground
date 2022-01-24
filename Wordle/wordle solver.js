@@ -9,6 +9,10 @@ function remove_element(array, element) {
 	if (index > -1) array.splice(index, 1);
 }
 
+function unique_letter_count(word) {
+	return String.prototype.concat(...new Set(word)).length;
+}
+
 let wordle = {
 	correct: {},
 	wrong_spot: {},
@@ -75,12 +79,33 @@ let wordle = {
 		}
 	
 		wordle.word_list = wordle.word_list.filter(filter_correct).filter(filter_wrong_spot).filter(filter_incorrect);
-	
+		
+		wordle.sort_word_list();
+		
 		return wordle.word_list;
 	},
 
 	do: (guess, values) => {
 		wordle.update(guess, values);
 		return wordle.guess()[0];
+	},
+	
+	sort_word_list: () => {
+		let letters = 'abcdefghijklmnopqrstuvwxyz'.split('');
+		let letters_count = {};
+		for (const letter of letters) letters_count[letter] = 0;
+		for (const word of wordle.word_list) {
+			for (const letter of word.split('')) letters_count[letter]++;
+		}
+		function word_value(word) {
+			let result = 0;
+			for (const letter of word.split('')) result += letters_count[letter];
+			return result;
+		}
+		function compare_words(a, b) {
+			if (unique_letter_count(b) != unique_letter_count(a)) {return unique_letter_count(b) - unique_letter_count(a);}
+			else {return word_value(b) - word_value(a);}
+		}
+		wordle.word_list.sort(compare_words);
 	}
 }
