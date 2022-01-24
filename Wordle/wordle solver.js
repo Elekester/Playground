@@ -1,4 +1,4 @@
-fetch('word list.json')
+fetch('https://raw.githubusercontent.com/Elekester/Playground/main/Wordle/word%20list.json')
 	.then(response => response.text())
 	.then(data => {
 		let word_list = JSON.parse(data);
@@ -39,7 +39,7 @@ let wordle = {
 			if (values_array[i] == 'c' && !(guess_array[i] in wordle.correct)) {
 				wordle.correct[guess_array[i]] = i;
 			}
-			if (values_array[i] == 'i' && !(wordle.incorrect.includes(guess_array[i]))) wordle.incorrect.push(guess_array[i]);
+			if (values_array[i] == 'i' && !(wordle.incorrect.includes(guess_array[i])) && !(guess_array[i] in wordle.correct)) wordle.incorrect.push(guess_array[i]);
 			if (values_array[i] == 'w') {
 				if (guess_array[i] in wordle.wrong_spot && !(wordle.wrong_spot[guess_array[i]].includes(i))) wordle.wrong_spot[guess_array[i]].push(i);
 				else if (!(guess_array[i] in wordle.wrong_spot)) wordle.wrong_spot[guess_array[i]] = [i];
