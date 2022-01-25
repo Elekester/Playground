@@ -1,108 +1,105 @@
-let word_list = [];
+class Wordle {
+	constructor(legal_guesses, legal_answers) {
+		/**
+		 * The letters that have been correctly guessed.
+		 * @property {[number]} [a] - Indicates the positions of correctly guessed letters a in the wordle. A similar property exists for each letter of the alphabet.
+		 */
+		this.correct = {};
+		
+		/**
+		 * The letters that have been guessed in the wrong positions.
+		 * @property {[number]} [a] - Indicates the positions of that the letter a has already been guessed in, and found to not be in. A similar property exists for each letter of the alphabet.
+		 */
+		this.present = {};
+		
+		/**
+		 * An array of the letters that have been guessed which are absent from the wordle.
+		 */
+		this.absent = [];
+		
+		this.legal_guesses = legal_guesses;
+		this.legal_answers = legal_answers;
+		this.guesses = [...legal_guesses];
+		this.answers = [...legal_answers];
+	}
+	
+	reset() {
+		this.correct = {};
+		this.present = {};
+		this.absent = [];
+		this.guesses = [...this.legal_guesses];
+		this.answers = [...this.legal_answers];
+	}
 
-function remove_element(array, element) {
-	const index = array.indexOf(element);
-	if (index > -1) array.splice(index, 1);
-}
-
-function unique_letter_count(word) {
-	return String.prototype.concat(...new Set(word)).length;
-}
-
-let wordle = {
-	correct: {},
-	wrong_spot: {},
-	incorrect: [],
-	word_list: [...word_list],
-
-	reset: () => {
-		wordle.correct = {};
-		wordle.wrong_spot = {};
-		wordle.incorrect = [];
-		wordle.word_list = [...word_list];
-	},
-
-	remove: (word) => {
-		remove_element(word_list, word);
-		remove_element(wordle.word_list, word);
-		console.log(JSON.stringify(word_list));
-	},
-
-	update: (guess, values) => {
+	g(guess, result) {
+		// Update this.correct, present, and absent with the results.
 		let guess_array = guess.split('');
-		let values_array = values.split('');
-		for (let i = 0; i < 5; i++) {
-			if (values_array[i] == 'c' && !(guess_array[i] in wordle.correct)) {
-				wordle.correct[guess_array[i]] = i;
+		let values_array = result.split('');
+		for (let i = 0; i < guess.length; i++) {
+			if (values_array[i] == 'c' && !(guess_array[i] in this.correct)) {
+				this.correct[guess_array[i]] = i;
 			}
-			if (values_array[i] == 'i' && !(wordle.incorrect.includes(guess_array[i])) && !(guess_array[i] in wordle.correct)) wordle.incorrect.push(guess_array[i]);
-			if (values_array[i] == 'w') {
-				if (guess_array[i] in wordle.wrong_spot && !(wordle.wrong_spot[guess_array[i]].includes(i))) wordle.wrong_spot[guess_array[i]].push(i);
-				else if (!(guess_array[i] in wordle.wrong_spot)) wordle.wrong_spot[guess_array[i]] = [i];
+			else if (values_array[i] == 'a' && !(this.absent.includes(guess_array[i])) && !(guess_array[i] in this.correct)) {
+				this.absent.push(guess_array[i]);
 			}
-		}
-	},
-
-	guess: () => {
-		let correct = wordle.correct;
-		let incorrect = wordle.incorrect;
-		let wrong_spot = wordle.wrong_spot;
-	
-		function filter_correct(word) {
-			let word_array = word.split('');
-			for (const [letter, index] of Object.entries(correct)) {
-				if (word_array[index] != letter) return false;
-			}
-			return true;
-		}
-	
-		function filter_wrong_spot(word) {
-			let word_array = word.split('');
-			for (const [letter, indexes] of Object.entries(wrong_spot)) {
-				if (!word.includes(letter)) return false;
-				for (const index of indexes) {
-					if (word_array[index] == letter) return false;
+			else if (values_array[i] == 'p') {
+				if (guess_array[i] in this.present && !(this.present[guess_array[i]].includes(i))) {
+					this.present[guess_array[i]].push(i);
+				}
+				else if (!(guess_array[i] in this.present)) {
+					this.present[guess_array[[i]]] = [i];
 				}
 			}
-			return true;
 		}
-	
-		function filter_incorrect(word) {
-			for (const letter of incorrect) {
-				if (word.includes(letter)) return false;
-			}
-			return true;
-		}
-	
-		wordle.word_list = wordle.word_list.filter(filter_correct).filter(filter_wrong_spot).filter(filter_incorrect);
-		
-		wordle.sort_word_list();
-		
-		return wordle.word_list;
-	},
 
-	do: (guess, values) => {
-		wordle.update(guess, values);
-		return wordle.guess()[0];
-	},
-	
-	sort_word_list: () => {
+		// Filter the guesses and answers based on the above data.
+		this.guesses = this.guesses.filter(this.filter.bind(this));
+
+		// Sort the guesses and answers by some criteria.
 		let letters = 'abcdefghijklmnopqrstuvwxyz'.split('');
 		let letters_count = {};
 		for (const letter of letters) letters_count[letter] = 0;
-		for (const word of wordle.word_list) {
+		for (const word of this.guesses) {
 			for (const letter of word.split('')) letters_count[letter]++;
 		}
-		function word_value(word) {
-			let result = 0;
-			for (const letter of word.split('')) result += letters_count[letter];
-			return result;
+		
+		let compare_words = (word1, word2) => {
+			if (this.unique_letter_count(word1) != this.unique_letter_count(word2)) {
+			return this.unique_letter_count(word2) - this.unique_letter_count(word1);
+			}
+			else {
+			return this.word_value(word2, letters_count) - this.word_value(word1, letters_count);
+			}
+		};
+		
+		this.guesses.sort(compare_words.bind(this));
+
+		return this.guesses[0];
+	}
+
+	filter(word) {
+		let word_array = word.split('');
+		for (const [letter, i] of Object.entries(this.correct)) {
+			if (word_array[i] != letter) return false;
 		}
-		function compare_words(a, b) {
-			if (unique_letter_count(b) != unique_letter_count(a)) {return unique_letter_count(b) - unique_letter_count(a);}
-			else {return word_value(b) - word_value(a);}
+		for (const [letter, is] of Object.entries(this.present)) {
+			if (!word.includes(letter)) return false;
+			for (const i of is) {
+				if (word_array[i] == letter) return false;
+			}
 		}
-		wordle.word_list.sort(compare_words);
+		for (const letter of this.absent) {
+			if (word.includes(letter)) return false;
+		}
+		return true;
+	}
+	
+	unique_letter_count(word) {
+		return String.prototype.concat(...new Set(word)).length;
+	}
+	
+	word_value(word, letters_count) {
+		return word.split('').reduce((result, letter) => result + letters_count[letter],0);
 	}
 }
 
@@ -110,5 +107,5 @@ fetch('https://raw.githubusercontent.com/Elekester/Playground/main/Wordle/word%2
 	.then(response => response.text())
 	.then(data => {
 		word_list = JSON.parse(data);
-		wordle.reset();
+		w = new Wordle(word_list, word_list);
 	});
