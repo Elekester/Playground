@@ -106,6 +106,8 @@ class Wordle {
 fetch('https://raw.githubusercontent.com/Elekester/Playground/main/Wordle/word%20list.json')
 	.then(response => response.text())
 	.then(data => {
-		word_list = JSON.parse(data);
-		w = new Wordle(word_list, word_list);
+		data = JSON.parse(data);
+		let guesses = JSON.parse(data).guesses;
+		let answers = JSON.parse(data).answers;
+		var w = new Wordle(guesses, answers);
 	});
