@@ -107,8 +107,8 @@ fetch('https://raw.githubusercontent.com/Elekester/Playground/main/Wordle/word%2
 	.then(response => response.text())
 	.then(data => {
 		data = JSON.parse(data);
-		let guesses = JSON.parse(data).guesses;
-		let answers = JSON.parse(data).answers;
+		let guesses = data.guesses;
+		let answers = data.answers;
 		var w = new Wordle(guesses, answers);
 		console.log(w.g('',''));
 	});
