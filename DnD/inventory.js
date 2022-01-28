@@ -97,7 +97,7 @@ class Coins {
 	
 	/**
 	 * Returns the Coins instance as a json string.
-	 * @param {Coins} The instance to jsonify.
+	 * @param {Coins} instance The instance to jsonify.
 	 * @returns {string} The instance as a json string.
 	 */
 	static save(instance) {
@@ -137,7 +137,7 @@ class Item {
 	
 	/**
 	 * Returns the Item instance as a json string.
-	 * @param {Item} The instance to jsonify.
+	 * @param {Item} instance The instance to jsonify.
 	 * @returns {string} The instance as a json string.
 	 */
 	static save(instance) {
@@ -225,7 +225,7 @@ class Bag {
 	
 	/**
 	 * Returns the Bag instance as a json string.
-	 * @param {Item} The instance to jsonify.
+	 * @param {Item} instance The instance to jsonify.
 	 * @returns {string} The instance as a json string.
 	 */
 	static save(instance) {
