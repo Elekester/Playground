@@ -74,7 +74,7 @@ class Wordle {
 		
 		this.guesses.sort(compare_words.bind(this));
 
-		return this.guesses[0];
+		return this.guesses;
 	}
 
 	filter(word) {
@@ -107,8 +107,6 @@ fetch('https://raw.githubusercontent.com/Elekester/Playground/main/Wordle/word%2
 	.then(response => response.text())
 	.then(data => {
 		data = JSON.parse(data);
-		let guesses = data.guesses;
-		let answers = data.answers;
-		window.w = new Wordle(guesses, answers);
+		window.w = new Wordle(data.guesses, data.answers);
 		console.log(w.g('',''));
 	});
