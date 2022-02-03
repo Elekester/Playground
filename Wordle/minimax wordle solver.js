@@ -1,6 +1,8 @@
 // This wordle solver doesn't quite handle double letters properly, and might be overvaluing guesses with them because of that.
 // Its also really slow, implement ab pruning.
 
+import fetch from 'node-fetch'; // Remove in running in browser.
+
 class Wordle_solver {
 	constructor(hard_mode = false, correct = [null, null, null, null, null]
 		, present = [[], [], [], [], []], absent= [], answers = null, guesses = null
@@ -103,10 +105,16 @@ class Wordle_solver {
 	}
 	
 	solve(depth = 1) {
+		let startTime = new Date().getTime();
+		let timeRemaining = 0;
 		let dict = {};
 		let value = 0;
+		let a = Infinity;
+		let guess = '';
+		let best_guess = '';
 		let temp_wordle = new Wordle_solver(this.hard_mode, this.correct, this.present, this.absent, this.answers, this.guesses, true);
-		for (const guess of this.guesses) {
+		for (let i = 0; i < this.guesses.length; ++i) {
+			guess = this.guesses[i];
 			value = 0;
 			for (const answer of this.answers) {
 				temp_wordle.restart();
@@ -114,9 +122,18 @@ class Wordle_solver {
 				value += temp_wordle.score(depth - 1);
 			}
 			dict[guess] = value;
+			if (value < a) best_guess = [guess, value/this.answers.length];
+			a = Math.min(a, value);
+			
+			// Log everything.
+			console.clear();
+			timeRemaining = (new Date().getTime() - startTime)/(i+1)*(this.guesses.length - i - 1);
+			timeRemaining = [timeRemaining/(1000*60*60*24), timeRemaining%(1000*60*60*24)/(1000*60*60), timeRemaining%(1000*60*60)/(1000*60), timeRemaining%(1000*60)/(1000), timeRemaining%(1000)];
+			console.log("Wordle Solver (Depth %i):\n\nProgress: %i/%i (%s: %f)\nTime Remaining: %i days, %i hours, %i minutes, %i seconds, %i milliseconds\nBest Guess: ", depth, i+1, this.guesses.length, guess, value/this.answers.length, ...timeRemaining, ...best_guess);
 		}
 		this.guesses.sort((a,b) => dict[b] - dict[a]);
-		return this.guesses;
+		console.log(this.guesses, dict);
+		return '\nFinished';
 	}
 	
 	update(guess, results) {
@@ -125,7 +142,7 @@ class Wordle_solver {
 				this.correct[i] = guess[i];
 			} else if (results[i] == 'p' && !this.present[i].includes(guess[i])) {
 				this.present[i].push(guess[i]);
-			} else if (results[i] == 'a' && !this.absent.includes(guess[i]) && !this.correct.includes(guess[i]) && ![].concat(...this.present).includes(guess[i])) {
+			} else if (results[i] == 'a' && !this.absent.includes(guess[i])) {
 				this.absent.push(guess[i]);
 			}
 		}
@@ -134,4 +151,10 @@ class Wordle_solver {
 	}
 }
 
-w = new Wordle_solver(true);
+console.clear();
+console.log("Wordle Solver (Depth ?):");
+let w = new Wordle_solver(true);
+setTimeout((function() {
+console.log("\nProgress: 0/%i (Fetching data...)", w.guesses.length);
+	console.log(w.solve(1));
+}), 1000);
