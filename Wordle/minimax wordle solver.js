@@ -1,4 +1,4 @@
-// This wordle solver doesn't quite handle double letters properly, and might be overvaluing guesses with them because of that.
+// This wordle solver doesn't quite handle double letters properly.
 // Its also really slow, implement ab pruning.
 
 import fetch from 'node-fetch'; // Remove in running in browser.
