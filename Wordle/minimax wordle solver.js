@@ -1,3 +1,6 @@
+// This wordle solver doesn't quite handle double letters properly, and might be overvaluing guesses with them because of that.
+// Its also really slow, implement ab pruning.
+
 class Wordle_solver {
 	constructor(hard_mode = false, correct = [null, null, null, null, null]
 		, present = [[], [], [], [], []], absent= [], answers = null, guesses = null
@@ -122,7 +125,7 @@ class Wordle_solver {
 				this.correct[i] = guess[i];
 			} else if (results[i] == 'p' && !this.present[i].includes(guess[i])) {
 				this.present[i].push(guess[i]);
-			} else if (results[i] == 'a' && !this.absent.includes(guess[i])) {
+			} else if (results[i] == 'a' && !this.absent.includes(guess[i]) && !this.correct.includes(guess[i]) && ![].concat(...this.present).includes(guess[i])) {
 				this.absent.push(guess[i]);
 			}
 		}
