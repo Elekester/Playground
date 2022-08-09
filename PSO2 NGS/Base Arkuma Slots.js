@@ -172,5 +172,4 @@ class Arkuma {
 }
 
 let a = new Arkuma();
-for (let i = 0; i < 5; i++) {a.spin()}
 console.log(a.cc, a);
