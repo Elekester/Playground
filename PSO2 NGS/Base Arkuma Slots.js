@@ -59,7 +59,24 @@ class Arkuma {
 		return this.cc;
 	}
 	
-	boss() {
+	boss(num) {
+		if (num) {
+			let roll2 = Math.random()*100;
+			if (num == 4) {
+				if (roll2 < 25) {this.cc *= 0}
+				else if (roll2 < 50) {this.cc *= 1.2}
+				else if (roll2 < 75) {this.cc *= 1.3}
+				else {this.cc *= 1.4}
+			} else if (num == 3) {
+				if (roll2 < 1/3*100) {this.cc *= 0}
+				if (roll2 < 2/3*100) {this.cc *= 1.3}
+				else {this.cc *= 1.5}
+			} else {
+				if (roll2 < 50) {this.cc *= 0}
+				else {this.cc *= 1.8}
+			}
+			return;
+		}
 		let cutoffs = [0,100];
 		switch (Math.floor((this.stage-1)/5)) {
 			case 0:
@@ -106,17 +123,17 @@ class Arkuma {
 		if (roll == 'b') {this.b = true; this.cc += 10}
 		else if (roll == 'p') {this.p = true; this.cc += 30}
 		else if (roll == 'y') {this.y = true; this.cc += 50}
-		else if (roll == 'df') {
+		else if (roll == 'd2' || roll == 'd3' || roll == 'd4') {
 			let avg = 0;
 			for (let i = 0; i < this.constructor.iterations; i++) {
 				let game = this.copy();
-				game.boss();
+				game.boss(roll.slice(1));
 				game.stage++;
 				while (!game.terminal) {game.spin()}
 				avg += game.cc;
 			}
 			avg /= this.constructor.iterations;
-			console.log(this.cc, avg);
+			console.log(avg, this);
 			return;
 		} else {
 			this.cc *= roll/100;
@@ -147,9 +164,13 @@ class Arkuma {
 			avg += game.cc;
 		}
 		avg /= this.constructor.iterations;
-		console.log(this.cc, avg);
+		console.log(avg, this);
 		return;
 	}
 	
 	static iterations = 1000000;
 }
+
+let a = new Arkuma();
+for (let i = 0; i < 5; i++) {a.spin()}
+console.log(a);
