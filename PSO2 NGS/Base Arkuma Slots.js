@@ -133,7 +133,7 @@ class Arkuma {
 				avg += game.cc;
 			}
 			avg /= this.constructor.iterations;
-			console.log(avg, this);
+			console.log(avg, this.cc, this);
 			return;
 		} else {
 			this.cc *= roll/100;
@@ -164,7 +164,7 @@ class Arkuma {
 			avg += game.cc;
 		}
 		avg /= this.constructor.iterations;
-		console.log(avg, this);
+		console.log(avg, this.cc, this);
 		return;
 	}
 	
